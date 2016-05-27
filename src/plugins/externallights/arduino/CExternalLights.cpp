@@ -25,8 +25,8 @@
 
 namespace
 {
-    Pin elight0("elight0", ELIGHTS0_PIN, CPin::kAnalog, CPin::kOutput);
-    Pin elight1("elight1", ELIGHTS1_PIN, CPin::kAnalog, CPin::kOutput);
+    CPin elight0("elight0", ELIGHTS0_PIN, CPin::kAnalog, CPin::kOutput);
+    CPin elight1("elight1", ELIGHTS1_PIN, CPin::kAnalog, CPin::kOutput);
 }
 
 void CExternalLights::Initialize()
@@ -42,7 +42,7 @@ void CExternalLights::Initialize()
 
 void CExternalLights::Update( CCommand& commandIn )
 {
-    if( commandIn.Equals( "eligt0" ) )
+    if( commandIn.Equals( "elight0" ) )
 	{
 		float percentValue = ( float )commandIn.m_arguments[1] / 100.0f;
 		int value = (int)( 255.0f * percentValue );
@@ -59,7 +59,7 @@ void CExternalLights::Update( CCommand& commandIn )
 	}
     
     // Handle messages
-	if( commandIn.Equals( "eligt1" ) )
+	if( commandIn.Equals( "elight1" ) )
 	{
 		// 0 - 255
 		float percentValue = ( float )commandIn.m_arguments[1] / 100.0f; //0 - 255

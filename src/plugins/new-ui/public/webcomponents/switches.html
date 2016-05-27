@@ -155,8 +155,7 @@
                   state: false,
                   description: 'External LED lights on/off',
                   events: [
-                      // TODO
-                    {message:'plugin.externalLights.level',fn: function(lightNum, level){ if( lightNum == 0){return level>0;}}}
+                    {message:'plugin.externalLights.level',fn: function(lightNum, level){ if( lightNum == 0) return level>0; }}
                   ],
                   switch: function (state) {
                     if (self.eventEmitter !== undefined){
@@ -171,7 +170,6 @@
                   state: false,
                   description: 'External LED lights on/off',
                   events: [
-                      // TODO
                     {message:'plugin.externalLights.level',fn: function(lightNum, level){if( lightNum == 1){return level>0;}}}
                   ],
                   switch: function (state) {
