@@ -4,5 +4,18 @@
   "Camera tilt reported in microseconds": "Camera tilt reported in microseconds",
   "Depth in meters": "Depth in meters",
   "Heading in degrees 0 to 360": "Heading in degrees 0 to 360",
-  "Scaling Laser power 0 to 255": "Scaling Laser power 0 to 255"
+  "Scaling Laser power 0 to 255": "Scaling Laser power 0 to 255",
+  "Voltage reported by MCU": "Voltage reported by MCU",
+  "Air temperature (degrees C) reported Arduino": "Air temperature (degrees C) reported Arduino",
+  "Voltage (ma) measured at pin A4": "Voltage (ma) measured at pin A4",
+  "Current (ma) measured from port battery tube": "Current (ma) measured from port battery tube",
+  "Current (ma) measured from starboard battery tube": "Current (ma) measured from starboard battery tube",
+  "External Light 0 percent power": "External Light 0 percent power",
+  "External Light 1 percent power": "External Light 1 percent power",
+  "Current (ma) measured in to port ESC": "Current (ma) measured in to port ESC",
+  "Current (ma) measured in to vertical ESC": "Current (ma) measured in to vertical ESC",
+  "Current (ma) measured in to starboard ESC": "Current (ma) measured in to starboard ESC",
+  "Current (ma) measured in to the board via both battery packs": "Current (ma) measured in to the board via both battery packs",
+  "Current (ma) measured at pin A0": "Current (ma) measured at pin A0",
+  "Forward thrust power in percent of total thrust": "Forward thrust power in percent of total thrust"
 }

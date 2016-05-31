@@ -12,8 +12,8 @@ $(function() {
 
     var peerOpts= {
         channelConfig: {
-          ordered: false,
-          maxRetransmits: 0
+      //    ordered: false,
+      //    maxRetransmits: 0
         },
         initiator: true,
         trickle: false

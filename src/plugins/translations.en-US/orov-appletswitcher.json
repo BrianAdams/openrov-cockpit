@@ -11,5 +11,6 @@
   "vr": "vr",
   "diagnostics": "diagnostics",
   "diveprofile": "diveprofile",
-  "RemoteAccess": "RemoteAccess"
+  "RemoteAccess": "RemoteAccess",
+  "geomux": "geomux"
 }

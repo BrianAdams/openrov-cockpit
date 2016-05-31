@@ -43,7 +43,6 @@ plugins.ExternalLights.prototype.inputDefaults = function ()
       name: 'plugin.externalLights.0.adjust_decrememt',
       description: 'Makes the ROV lights dimmer.',
       defaults: { keyboard: '7'},
-
       down: function () {
         console.log( "b" );
         cockpit.rov.emit('plugin.externalLights.set', 0, -0.1 + Number.parseFloat(self.state[0].level));

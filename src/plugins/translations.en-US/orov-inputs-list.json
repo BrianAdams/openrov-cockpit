@@ -105,5 +105,11 @@
   "Command name: 'example.testMessage' Binding: keyboard:alt+T": "Command name: 'example.testMessage' Binding: keyboard:alt+T",
   "Command name: 'video.keyBoardMapping' Binding: keyboard:alt+0": "Command name: 'video.keyBoardMapping' Binding: keyboard:alt+0",
   "Command name: 'video.keyBoardMapping' Binding: gamepad:X": "Command name: 'video.keyBoardMapping' Binding: gamepad:X",
-  "Command name: 'video.testMessage' Binding: keyboard:alt+T": "Command name: 'video.testMessage' Binding: keyboard:alt+T"
+  "Command name: 'video.testMessage' Binding: keyboard:alt+T": "Command name: 'video.testMessage' Binding: keyboard:alt+T",
+  "plugin.externalLights.0.adjust_increment": "plugin.externalLights.0.adjust_increment",
+  "plugin.externalLights.0.adjust_decrememt": "plugin.externalLights.0.adjust_decrememt",
+  "plugin.externalLights.0.toggle": "plugin.externalLights.0.toggle",
+  "plugin.externalLights.1.adjust_increment": "plugin.externalLights.1.adjust_increment",
+  "plugin.externalLights.1.adjust_decrememt": "plugin.externalLights.1.adjust_decrememt",
+  "plugin.externalLights.1.toggle": "plugin.externalLights.1.toggle"
 }
