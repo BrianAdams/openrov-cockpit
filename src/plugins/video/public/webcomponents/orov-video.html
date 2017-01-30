@@ -38,7 +38,6 @@
       menuState='on'
       src='{{videoSource}}'
       framespersecond='{{framesPerSecond}}'
-      canvas='{{canvas}}'
       cors='false'
       showMenu='true'
       show-stats='{{showStats}}'>
@@ -56,7 +55,11 @@
         {
           videoSource:          { type: Object },
           framesPerSecond:      { type: Number },
-          canvas:               { type: Object, observer: '_canvasChanged' },
+          /**
+           * CanvasImageSource is a type representing any objects of one of the following types:
+           *    HTMLImageElement, HTMLVideoElement, HTMLCanvasElement, or ImageBitmap. 
+           */
+          canvasImageSource:    { type: Object, observer: '_canvasChanged' },
           videoMimeType:        { type: String },
           location:             { type: String },
           showStats:            { type: Boolean, value: function(){ return false; } },
@@ -102,7 +105,7 @@
 
             if (typeof(callback)==='function')
             {
-              callback({forwardCanvas:this.canvas});
+              callback({forwardCanvas:this.canvasImageSource});
             }
           });
 
@@ -156,6 +159,7 @@
                   self.$$('#camera1').init(new Uint8Array(data),function()
                   {
                     packetVideo_initializationInProgress = false;
+                    //TODO: depricate/remote 'video.videoElementAvailable'
                     emitter.emit('video.videoElementAvailable',self.$$('#camera1').getVideoElement());
                   });
                 });
@@ -190,7 +194,7 @@
         {
           if (this.eventEmitter!==undefined)
           {
-            this.eventEmitter.emit('video.forward.canvas-changed',this.canvas);
+            this.eventEmitter.emit('video.forward.canvas-changed',this.canvasImageSource);
           }
         },
 

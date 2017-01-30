@@ -1,6 +1,25 @@
 (function (window, document, jQuery) { //The function wrapper prevents leaking variables to global space
-  'use strict';
-
+  //'use strict'; //#disabled to make three.js compatible
+  //var THREE=window.THREE={REVISION:"80"};  //Be sure to update when changing versions
+  
+  //This should probably be replaced with Brunch/webpack/requies....
+  $.getScript('components/three.js/three.min.js',function(){
+    var head = document.getElementsByTagName("head")[0];
+    [
+      'components/three.js-examples/examples/js/shaders/CopyShader.js',
+      'components/three.js-examples/examples/js/shaders/EdgeShader.js',
+      'components/three.js-examples/examples/js/postprocessing/EffectComposer.js',
+      'components/three.js-examples/examples/js/postprocessing/MaskPass.js',
+      'components/three.js-examples/examples/js/postprocessing/RenderPass.js',
+      'components/three.js-examples/examples/js/postprocessing/ShaderPass.js',
+    ].forEach(function(script){
+      console.trace("Adding " + script);
+      var js = document.createElement("script");
+      js.type = "text/javascript";
+      js.src = script;
+      head.appendChild(js);    
+    });
+  });
 
   var VideoFilter;
 
@@ -42,23 +61,6 @@
   VideoFilter.prototype.disable = function disable() {
     this.stopfilter();
   };
-
-  $.getScript('components/three.js/build/three.js',function(){
-    var head = document.getElementsByTagName("head")[0];
-    [
-      'components/three.js/examples/js/shaders/CopyShader.js',
-      'components/three.js/examples/js/shaders/EdgeShader.js',
-      'components/three.js/examples/js/postprocessing/EffectComposer.js',
-      'components/three.js/examples/js/postprocessing/MaskPass.js',
-      'components/three.js/examples/js/postprocessing/RenderPass.js',
-      'components/three.js/examples/js/postprocessing/ShaderPass.js',
-    ].forEach(function(script){
-      var js = document.createElement("script");
-      js.type = "text/javascript";
-      js.src = script;
-      head.appendChild(js);
-    });
-  });
 
   VideoFilter.prototype.stopfilter = function stopfilter() {
     if (this.removeCanvas!=null){
