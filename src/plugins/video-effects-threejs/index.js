@@ -1,5 +1,5 @@
 function vfilter(name, deps) {
-  console.log('This is where the video filter edge threejs plugin code would execute in the node process.');
+  console.log('This is where the video effects plugin code would execute in the node process.');
 
 }
 
