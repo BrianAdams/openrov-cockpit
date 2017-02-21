@@ -6,11 +6,11 @@
 
     var fragment = `
 precision mediump float;
-
+varying vec2 vUv;
 uniform sampler2D u_texture;
 
 void main() {
-  vec4 maxColor = vec4(0);
+  vec4 maxColor = vec4(0,0,0,0);
   
   // we know the texture is 256x1 so just go over the whole thing
   for (int i = 0; i < 256; ++i) {
@@ -27,11 +27,20 @@ void main() {
 
  
 
-    var vertex = `
+    var vertex_org = `
 attribute vec4 position;
 void main() {
   gl_Position = position;
-}df
+}
+`
+
+    var vertex = `
+varying vec2 vUv;
+
+void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
 `
 
 

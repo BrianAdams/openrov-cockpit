@@ -36,7 +36,7 @@ void main() {
   
   // set the position to be over a single pixel in the 256x1 destination texture
   gl_Position = vec4((colorSum * 255.0 + 0.5) / 256.0 * 2.0 - 1.0, 0.5, 0, 1);
-  
+  //gl_Position = vec4(-0.2, 0.5, 0, 1);
   gl_PointSize = 1.0;
 }
 `

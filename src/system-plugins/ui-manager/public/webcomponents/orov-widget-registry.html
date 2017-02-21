@@ -36,6 +36,10 @@
                     this.webComponentsReady();                  
                 },
                 newReady: function(){
+                    if (this.processed){
+                        return;
+                    }
+                    this.processed = true;
                     var self=this;
                     var process=function(){
                        self.webComponentsReady();

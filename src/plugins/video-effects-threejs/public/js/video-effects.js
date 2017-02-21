@@ -159,6 +159,7 @@ VideoEffectsProcessor.prototype.rebuildEffectComposer = function() {
           canvas: canvas
       });
       renderer.setClearColor(0x000000);
+      renderer.autoClear=false;
       var tmpScene = new THREE.Scene();
 
       // camera
@@ -177,7 +178,7 @@ VideoEffectsProcessor.prototype.rebuildEffectComposer = function() {
       videoImageContext.fillStyle = '#ff0000';
       videoImageContext.fillRect(0, 0, videoImage.width, videoImage.height);
 
-      var videoTexture = new THREE.Texture(videoImage);
+      var videoTexture = new THREE.Texture(video);//videoImage);
       videoTexture.minFilter = THREE.LinearFilter;
       videoTexture.magFilter = THREE.LinearFilter;
 
@@ -188,7 +189,7 @@ VideoEffectsProcessor.prototype.rebuildEffectComposer = function() {
 
       var composer = new THREE.EffectComposer(renderer);
       composer.addPass(renderPass);
-      var dynamicLayer = new window.OROV.VideoEffects.layers.colorCorrection({imageTexture:videoTexture});
+      var dynamicLayer = new window.OROV.VideoEffects.layers.colorCorrection(renderer,tmpScene,{imageTexture:videoTexture});
       composer.addPass(dynamicLayer.getEffectComposerPass());
       self.activeLayers.push(dynamicLayer);
 
@@ -222,6 +223,7 @@ VideoEffectsProcessor.prototype.rebuildEffectComposer = function() {
       scaledCanvas.height = sh;
       var scaledimage = scaledCanvas.getContext('2d');
       function renderFrame() {
+          renderer.clear();
           var vw = video.videoWidth;
           var vh = video.videoHeight;
           if (vw>0 && (!video.paused || !video.ended)){
@@ -232,17 +234,19 @@ VideoEffectsProcessor.prototype.rebuildEffectComposer = function() {
                   videoImage.height = vh;
                };
 
-            videoImageContext.drawImage(video, 0, 0);
+            //videoImageContext.drawImage(video, 0, 0);
+
             //var x = videoImageContext.getImageData(0, 0, 200, 200);
 
             //Test to see if we can generate fast scalled images to potentially share
             //scaledimage.drawImage(videoImage,0,0,sw,sh,0,0,videoImage.width,videoImage.height);
             //var x = scaledimage.getImageData(0, 0, sw, sh);
             
-            self.update();
+
             if (videoTexture) {
                 videoTexture.needsUpdate = true;
             }
+            self.update();            
             composer.render();
             self.render(renderer);
           }
