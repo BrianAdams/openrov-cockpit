@@ -119,13 +119,7 @@ ShaderLayer.prototype.initHistogramScene = function () {
  //   var canvas= document.createElement("canvas");
     var mockHistogramTexture = getMockHistogramTexture();
     var mockMaxColorTexture = getMockMaxColorTexture();
- //   canvas.width = this.config.imageTexture.image.width;
- //   canvas.height = this.config.imageTexture.image.height;;
 
- //   var renderer = new THREE.WebGLRenderer({
- //       canvas: canvas
- //   });
- //   renderer.setClearColor(0x000000);
   
     /* Setup the historgram texture */
 
@@ -154,17 +148,8 @@ ShaderLayer.prototype.initHistogramScene = function () {
     hisogramRTT.material.needsUpdate = true;
   //  hisogramRTT.material.transparent = true;
 
-/*
-    for (var x = 0; x< imageWidth; x++){
-        for (var y=0; y< imageHeight; y++){
-            var vert = new THREE.Vector3();
-            vert.x = x;
-            vert.y = y;
-            vert.z = 0;
-            hisogramRTT.geometry.vertices.push(vert);
-        }
-    }
-*/        
+
+      
 
     var numPixels = imageHeight*imageWidth;
 
@@ -204,24 +189,11 @@ ShaderLayer.prototype.initHistogramScene = function () {
     var histogramcamera = new THREE.OrthographicCamera(-8, 8, 5, -5, 1, 10);
       histogramcamera.position.set(0, 0, 5);
 
-    /*
-    var histogramDisplayCanvas = document.createElement("canvas");
-    histogramDisplayCanvas.width=255;
-    histogramDisplayCanvas.height=100;
-    
-    document.body.appendChild(histogramDisplayCanvas);
-    histogramDisplayCanvas.style="position:absolute;left:0;top:0;z-index:9999"
-    this.histogramCanvas=histogramDisplayCanvas; 
-    */
+
 
     var histogramDisplayScene = new THREE.Scene();
         window.scene=histogramDisplayScene;
- /*   var renderer = new THREE.WebGLRenderer({
-        canvas: histogramDisplayCanvas
-    });
-    renderer.setClearColor(0x00000000);    //Salmon color
-    renderer.autoClear = false;
-*/
+
     // you may need to modify these parameters
     var renderTargetParams = {
     minFilter:THREE.LinearFilter,
@@ -243,26 +215,38 @@ ShaderLayer.prototype.initHistogramScene = function () {
 
     var histogramViewRTT = createRTTScene(255,100,histogramShader);
     console.log("histogramView Texture UUID:",histogramViewRTT.texture.uuid);
-/*    
-    var histogramTextureMat = new THREE.ShaderMaterial(
-        histogramShader
-    );
-    var histogramTextureGeo = new THREE.PlaneGeometry(255, 100);
-    histogramTextureMesh = new THREE.Mesh( histogramTextureGeo, histogramTextureMat );
 
-    histogramTextureMesh.position.set(0, 0, 0);
-    histogramDisplayScene.add( histogramTextureMesh);   
+     /***********    Historgram Post Processing and Sorting ******************************/
+
+    //Computes the key/index pairs and does the first sorting pass
+    var bitonicMergeSort_firstPass_shader = window.OROV.VideoEffects.shaders.BitonicSort_Step1.shader;
+
+    bitonicMergeSort_firstPass_shader.uniforms.u_texture =  { type: "t", value: hisogramRTT.texture };
+    bitonicMergeSort_firstPass_shader.uniforms.u_item1Mask = { type: "v4", value: new THREE.Vector4(0,0,0,0)}; //Set the column to use for item 1 
+    bitonicMergeSort_firstPass_shader.uniforms.u_item2Mask = { type: "v4", value: new THREE.Vector4(0,0,0,0)}; 
+
+    var bitonicMergeSort_firstPass_shader_RTT = createRTTScene(16,16,bitonic_move_histogram_to_texture_shader);
+
+    //We need two textures, one for the sorted R and G values, one for the sorted B and A values.
+    var bitonic_RG_texture = bitonicMergeSort_firstPass_shader_RTT.texture;
+    var bitonic_BA_texture = bitonic_RG_texture.clone();
+
+    //Performs row sorting for the passes 0 and 1 of each stage
+    var bitonicMergeSort_Pass0and1_shader = window.OROV.VideoEffects.shaders.BitonicSort_Step2.shader;
+    bitonicMergeSort_Pass0and1_shader.uniforms.u_texture =  { type: "t", value: bitonic_RG_texture };
+
+    //Does row sorting for all passes greater than 1 of each stage
 
 
-    var renderPass = new THREE.RenderPass(histogramDisplayScene, histogramcamera);
+    // Performs the column sort
 
-    var effectCopy = new THREE.ShaderPass(THREE.CopyShader);
-    effectCopy.renderToScreen = true;
 
-    var composer = new THREE.EffectComposer(this.renderer);
-    composer.addPass(renderPass);
-    composer.addPass(effectCopy);
-*/
+
+
+    console.log("bitonic_move_histogram Texture UUID:",bitonic_move_histogram_to_texture_RTT.texture.uuid);
+
+
+     /***********   Diagnostic windows ***************************************************/
 
       var viewhistogramMaterial = new THREE.MeshBasicMaterial({
           map: histogramViewRTT.texture,
@@ -311,20 +295,9 @@ ShaderLayer.prototype.initHistogramScene = function () {
 
     var buffer = new Float32Array(256*4);
 
- /*   this.renderer.state.buffers.color.setMask = function ( colorMask, masked ) {
 
-		if ( currentColorMask !== colorMask && ! locked ) {
-            if (masked) { 
-			    gl.colorMask( colorMask&&0xFF000000, colorMask&&0x00FF0000, colorMask&&0x0000FF00, colorMask&&0x000000FF );
-            } else {
-			    gl.colorMask( colorMask, colorMask, colorMask, colorMask );                
-            }
-            currentColorMask = colorMask;
+    /**********  Render loop  *************************************************************/
 
-		}
-
-	};
-    */
     //TODO: Add an offscrene renderer?
     var frames = 0;
     var activationframes = 0
@@ -336,22 +309,14 @@ ShaderLayer.prototype.initHistogramScene = function () {
             return;
         }
         activationframes=0;
-      //  o_autoClear = self.renderer.autoClear;
-      //  self.renderer.autoClear = false;
 
-//        var o_sortObjects = this.renderer.sortObjects;
-        //self.renderer.sortObjects=true;
 
         gl.blendFunc(gl.ONE, gl.ONE);
         gl.enable(gl.BLEND);
         
         this.renderer.state.buffers.color.setMask = function(){}; //disable threejs state mgt of color mask
         for (var channel = 0; channel < 4; ++channel) {
- /*           this.renderer.state.buffers.color.setMask = function(){
-                gl.colorMask(channel === 0, channel === 1, channel === 2, channel === 3);
-            
-            }
-        */
+
         gl.colorMask(channel === 0, channel === 1, channel === 2, channel === 3);
         self.renderer.state.buffers.color.setMask(false);
         self.renderer.state.buffers.color.setMask(true);                        
@@ -366,19 +331,9 @@ ShaderLayer.prototype.initHistogramScene = function () {
         }
         gl.colorMask(1,1,1,1);
         self.renderer.state.buffers.color.setMask = o_setMask;
-    //    self.renderer.state.buffers.color.setMask(false);
-    //    self.renderer.state.buffers.color.setMask(true);
+
         gl.blendFunc(gl.ONE, gl.ZERO);    
         gl.disable(gl.BLEND);
-        //this.renderer.state.setMask(false);
-
-        //gl.colorMask(true, true, true, true);
-        /* This appears to actually work */
-        // var gl = renderer.getContext();
-        // gl.readPixels( 0, 0, 255, 1, gl.RGBA, gl.FLOAT, buffer );      
-        // debugger;
-
-       
         
         self.renderer.render( maxColorRTT.scene, maxColorRTT.camera, maxColorRTT.renderTarget, true );
         self.renderer.render( histogramViewRTT.scene, histogramViewRTT.camera, histogramViewRTT.renderTarget, true );
@@ -391,14 +346,33 @@ ShaderLayer.prototype.initHistogramScene = function () {
             frames=0;
         }
 
+        this.BitonicSort()
 
-        /* composer.render(); */
-      //  self.renderer.autoClear = o_autoClear;
-      //  self.renderer.sortObjects = o_sortObjects;
-        //TODO: Render histogram somewhere?
+
         return true;
     }
     
+}
+
+ShaderLayer.prototype.BitonicSort = function(){
+
+    //Compute the key/index pairs
+
+
+    var logFieldsize = 8; //Math.log2(256)
+    var stages = logFieldsize*2;
+    var stride = 2; 
+
+    for (var current_stage=1; current_stage<=stages; current_stage++){
+        for (var phase=(current_stage-1); phase>0; phase--){
+            if (phase >= logFieldsize){ //Do the Column sorting
+
+            } else { //Do the Row sorting
+                var SearchDir;
+                for (var row=0;);//<-
+            }
+        }
+    }    
 }
 
 ShaderLayer.prototype.getEffectComposerPass = function() {
